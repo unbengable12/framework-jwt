@@ -51,7 +51,7 @@ public class JwtUtils {
         if (this.isInvalidToken(uuid))
             return false;
         Date now = new Date();
-        long expire = Math.max(now.getTime() - time.getTime(), 1);
+        long expire = Math.max(time.getTime() - now.getTime(), 1);
         template.opsForValue().set(Const.JWT_BLACK_LIST+uuid,"", expire, TimeUnit.MILLISECONDS);
         return true;
     }
