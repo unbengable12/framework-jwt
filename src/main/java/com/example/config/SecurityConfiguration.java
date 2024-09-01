@@ -28,6 +28,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 @Configuration
 @EnableWebSecurity
@@ -114,6 +115,14 @@ public class SecurityConfiguration {
     public void onLogoutSuccess(HttpServletRequest request,
                                 HttpServletResponse response,
                                 Authentication authentication) throws IOException, ServletException {
-
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf-8");
+        PrintWriter printWriter = response.getWriter();
+        String authorization = request.getHeader("Authorization");
+        if (jwtUtils.invalidateJwt(authorization)) {
+            printWriter.write(RestBean.success().asJsonString());
+        } else {
+            printWriter.write(RestBean.failure(400, "退出登录失败").asJsonString());
+        }
     }
 }
