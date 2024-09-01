@@ -41,25 +41,32 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilter(HttpSecurity http) throws Exception {
         return http
+                // 配置请求授权
                 .authorizeHttpRequests(conf -> conf
                         .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
+                // 配置表单登陆
                 .formLogin(conf -> conf
                         .loginProcessingUrl("/api/auth/login")
                         .successHandler(this::onAuthenticationSuccess)
                         .failureHandler(this::onAuthenticationFailure)
                 )
+                // 配置登出行为
                 .logout(conf -> conf
                         .logoutUrl("/api/auth/logout")
                         .logoutSuccessHandler(this::onLogoutSuccess)
                 )
+                // 配置异常处理
                 .exceptionHandling(conf -> conf
                         .authenticationEntryPoint(this::onUnauthorized)
                         .accessDeniedHandler(this::onAccessDeny)
                 )
+                // 关闭csrf保护
                 .csrf(AbstractHttpConfigurer::disable)
+                // 配置会话管理
                 .sessionManagement(conf -> conf
+                        // 无状态会话，即应用不会在服务器上保存用户的会话信息
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthorizeFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
