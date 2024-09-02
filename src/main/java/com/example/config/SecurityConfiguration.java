@@ -10,7 +10,6 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
@@ -21,13 +20,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -84,11 +78,10 @@ public class SecurityConfiguration {
         User user = (User) authentication.getPrincipal();
         Account account = accountService.findAccountByNameEmail(user.getUsername());
         String token = jwtUtils.createJwt(user, account.getId(), account.getUsername());
-        AuthorizeVo vo = new AuthorizeVo();
-        vo.setUsername(account.getUsername());
-        vo.setRole(account.getRole());
-        vo.setToken(token);
-        vo.setExpire(jwtUtils.expireTime());
+        AuthorizeVo vo = account.asViewObject(AuthorizeVo.class, v -> {
+            v.setToken(token);
+            v.setExpire(jwtUtils.expireTime());
+        });
         response.getWriter().write(RestBean.success(vo).asJsonString());
     }
 
