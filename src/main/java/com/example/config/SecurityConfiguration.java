@@ -41,7 +41,7 @@ public class SecurityConfiguration {
         return http
                 // 配置请求授权
                 .authorizeHttpRequests(conf -> conf
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/error").permitAll()
                         .anyRequest().authenticated()
                 )
                 // 配置表单登陆
