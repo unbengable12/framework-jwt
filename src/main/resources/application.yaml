@@ -16,8 +16,8 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   mail:
     host: smtp.163.com
-    username: s15978565660@163.com
-    password: GCPENDVXIWRQBGQE
+    username: 邮箱账号
+    password: 自己
   rabbitmq:
     addresses: localhost
     username: admin
